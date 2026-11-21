@@ -36,7 +36,6 @@ New projects are listed here automatically when a folder containing an `index.ht
 
 <!-- PROJECT-LINKS-START -->
 - [automation-store](https://orvgroup.github.io/mywebapps/automation-store/)
-- [basket-pdf-merger](https://orvgroup.github.io/mywebapps/basket-pdf-merger/)
 - [devtrack](https://orvgroup.github.io/mywebapps/devtrack/)
 <!-- PROJECT-LINKS-END -->
 
