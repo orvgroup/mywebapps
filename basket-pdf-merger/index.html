@@ -163,7 +163,7 @@ function startDrag(e){
 function moveDrag(e){
  if(!drag)return;drag.current={x:e.clientX,y:e.clientY};
  drag.el.style.left=(e.clientX-drag.el.offsetWidth/2)+'px';drag.el.style.top=(e.clientY-drag.el.offsetHeight/2)+'px';
- const r=hoop.getBoundingClientRect(),cx=r.right-64,cy=r.top+105;
+ const r=hoop.getBoundingClientRect(),cx=r.right-64,cy=r.top+74;
  const near=Math.hypot(e.clientX-cx,e.clientY-cy)<105;hoop.classList.toggle('active',near);
  court.classList.add('is-shooting');
 }
@@ -177,7 +177,7 @@ function endDrag(e){
  if(!drag)return;const id=drag.id,from=drag.start,to={x:e.clientX,y:e.clientY};
  const r=hoop.getBoundingClientRect();
  // Only the actual opening counts; touching the backboard or outside the rim is a miss.
- const cx=r.right-64,cy=r.top+105,rx=24,ry=13;
+ const cx=r.right-64,cy=r.top+74,rx=24,ry=13;
  const inBasket=Math.abs(to.x-cx)<=rx&&Math.abs(to.y-cy)<=ry;
  const nearRim=Math.hypot(to.x-cx,to.y-cy)<58;
  restoreDraggedBall();
