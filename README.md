@@ -37,6 +37,7 @@ New projects are listed here automatically when a folder containing an `index.ht
 <!-- PROJECT-LINKS-START -->
 - [automation-store](https://orvgroup.github.io/mywebapps/automation-store/)
 - [devtrack](https://orvgroup.github.io/mywebapps/devtrack/)
+- [profileforge](https://orvgroup.github.io/mywebapps/profileforge/)
 <!-- PROJECT-LINKS-END -->
 
 ---
