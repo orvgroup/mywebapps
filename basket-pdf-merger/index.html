@@ -58,7 +58,7 @@ $('mergeBtn').disabled=files.length<2||scored.size!==files.length||busy;
 $('courtStatus').textContent=files.length?scored.size===files.length?'All shots scored! Preparing your merge…': 'Shoot '+(files.length-scored.size)+' more '+(files.length-scored.size===1?'PDF':'PDFs')+' into the hoop.':'Ready when you are. Add at least 2 PDFs to play.';
 $('dropMessage').style.display=files.length?'none':'block';
 list.innerHTML=files.length?'':'<div class="note">No PDFs added yet.</div>';
-files.forEach((f,i)=>{const row=document.createElement('div');row.className='file-row';row.innerHTML='<div class="file-icon">PDF</div><div class="file-meta"><b></b><small></small></div><button class="remove" aria-label="Remove PDF">×</button>';row.querySelector('b').textContent=f.name;row.querySelector('small').textContent=fmt(f.size)+(scored.has(f.id)?' · SCORED':'');row.querySelector('button').onclick=()=>{if(busy)return;files=files.filter(x=>x.id!==f.id);scored.delete(f.id);render();update();say('Document removed.');};list.append(row)});
+files.forEach((f,i)=>{const row=document.createElement('div');row.className='file-row';row.innerHTML='<div class="file-icon">PDF</div><div class="file-meta"><b></b><small></small></div><button class="remove" aria-label="Remove PDF">×</button>';row.querySelector('b').textContent=f.name;row.querySelector('small').textContent=fmt(f.size)+(scored.has(f.id)?' · SCORED':'');row.querySelector('button').onclick=()=>{if(busy||drag)return;files=files.filter(x=>x.id!==f.id);scored.delete(f.id);render();update();say('Document removed.');};list.append(row)});
 }
 function render(){
 tray.innerHTML='';
@@ -66,7 +66,7 @@ if(!files.length){tray.innerHTML='<div class="empty-tray">Upload your PDFs to pu
 files.forEach(f=>{const el=document.createElement('div');el.className='pdf-ball'+(scored.has(f.id)?' scored':'');el.dataset.id=f.id;el.innerHTML='<div class="ball-art"></div><div class="ball-name"></div>';el.querySelector('.ball-name').textContent=f.name;el.title=f.name+(scored.has(f.id)?' — scored':' — drag into hoop');if(!scored.has(f.id))el.addEventListener('pointerdown',startDrag);tray.append(el)});
 }
 function addFiles(incoming){
-if(busy)return;let added=0;
+if(busy||drag)return;let added=0;
 [...incoming].forEach(file=>{if(file.type!=='application/pdf'&&!file.name.toLowerCase().endsWith('.pdf')){toast(file.name+' is not a PDF');return}if(files.some(x=>x.name===file.name&&x.size===file.size)){toast(file.name+' is already added');return}files.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),file,name:file.name,size:file.size});added++});
 render();update();if(added){say(added+' PDF'+(added>1?'s':'')+' added. Drag each basketball into the hoop!','good');toast(added+' PDF'+(added>1?'s':'')+' ready to shoot 🏀')}
 input.value='';
@@ -112,7 +112,7 @@ function resizeThree(){
 }
 function screenPoint(x,y){const r=court.getBoundingClientRect();return{x:x-r.left-r.width/2,y:r.height/2-(y-r.top)}}
 function animateShot(from,to,scoredShot){
- if(!renderer||!ballMesh){if(scoredShot)finishScore(drag.id);else{say('Missed! Aim for the centre of the hoop and try again.');toast('Off target — take another shot!')}return}
+ if(!renderer||!ballMesh){if(scoredShot)finishScore(drag.id);else{say('Missed! Aim for the centre of the hoop and try again.');toast('Off target — take another shot!');drag=null}return}
  cancelAnimationFrame(shotFrame);ballMesh.visible=true;
  const a=screenPoint(from.x,from.y),b=screenPoint(to.x,to.y);
  const dx=b.x-a.x,dy=b.y-a.y;
@@ -208,7 +208,7 @@ input.addEventListener('change',e=>addFiles(e.target.files));
 const zone=$('uploadZone');zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('over')});zone.addEventListener('dragleave',()=>zone.classList.remove('over'));zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('over');addFiles(e.dataTransfer.files)});
 court.addEventListener('dragover',e=>e.preventDefault());
 $('mergeBtn').addEventListener('click',mergeAndDownload);
-$('resetBtn').addEventListener('click',()=>{if(busy)return;files=[];scored.clear();render();update();say('Game reset. Add your PDFs to play again.');toast('Fresh court!')});
+$('resetBtn').addEventListener('click',()=>{if(busy||drag)return;files=[];scored.clear();render();update();say('Game reset. Add your PDFs to play again.');toast('Fresh court!')});
 render();update();initThree();
 })();
 </script>
