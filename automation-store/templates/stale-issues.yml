@@ -1,0 +1,26 @@
+name: Mark stale issues and pull requests
+
+on:
+  schedule:
+    - cron: "30 2 * * 1"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mark inactive conversations
+        uses: actions/stale@v9
+        with:
+          days-before-stale: 60
+          days-before-close: 14
+          stale-issue-label: "stale"
+          stale-pr-label: "stale"
+          stale-issue-message: "This issue has been inactive. Please update it if it is still relevant."
+          stale-pr-message: "This pull request has been inactive. Please update it if it is still relevant."
+          exempt-issue-labels: "pinned,security"
+          exempt-pr-labels: "pinned,security"

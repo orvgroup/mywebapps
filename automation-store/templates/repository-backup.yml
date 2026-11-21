@@ -1,0 +1,27 @@
+name: Repository Backup Artifact
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 0"
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create source archive
+        run: |
+          git archive --format=zip --output=repository-backup.zip HEAD
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: repository-backup-${{ github.run_number }}
+          path: repository-backup.zip
+          retention-days: 30
