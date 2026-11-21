@@ -18,7 +18,7 @@ https://orvgroup.github.io/mywebapps/profileforge/
 - Custom headline and accent color.
 - QR code linking to the GitHub profile.
 - PNG and SVG card export, plus shareable username URLs.
-- Three.js 3D hero artwork.
+- Three.js 3D hero artwork and an animated, interactive 3D developer identity card.
 - Responsive layout and reduced-motion support.
 - Ten-minute browser cache to reduce repeat API requests.
 
