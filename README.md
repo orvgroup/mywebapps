@@ -35,6 +35,7 @@ This repository is where I publish the websites and applications I build while l
 New projects are listed here automatically when a folder containing an `index.html` file is added to the repository.
 
 <!-- PROJECT-LINKS-START -->
+- [automation-store](https://orvgroup.github.io/mywebapps/automation-store/)
 - [devtrack](https://orvgroup.github.io/mywebapps/devtrack/)
 <!-- PROJECT-LINKS-END -->
 
