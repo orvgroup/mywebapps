@@ -83,7 +83,7 @@ try{pdf=await PDFDocument.load(bytes,{ignoreEncryption:false})}catch(err){throw 
 const pages=await merged.copyPages(pdf,pdf.getPageIndices());pages.forEach(p=>merged.addPage(p));
 }
 const bytes=await merged.save();const blob=new Blob([bytes],{type:'application/pdf'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='basketpdf-merged.pdf';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
-say('🏆 Game over — your merged PDF has been downloaded!','good');toast('PDF downloaded! You are the MVP 🏆');
+say('🏆 Game over — your merged PDF has been downloaded!','good');toast('PDF downloaded! You are the MVP ');
 }catch(err){say(err.message||'Something went wrong while merging.','error');toast('Merge failed — check the message.');}
 finally{busy=false;$('mergeBtn').textContent='🏀 Merge & download';update()}
 }
