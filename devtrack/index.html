@@ -1,0 +1,782 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+  <title>DevTrack | Productivity Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --primary: #6857e8;
+  --background: #f8f9fc;
+  --text: #202235;
+  --muted: #888b9b;
+  --border: #ececf2;
+  --white: #ffffff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  background: var(--background);
+}
+
+button, input, select {
+  font: inherit;
+}
+
+button { cursor: pointer; }
+
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 245px;
+  background: white;
+  border-right: 1px solid var(--border);
+  padding: 32px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.logo {
+  font-size: 25px;
+  margin-bottom: 35px;
+}
+
+.logo span { color: var(--primary); }
+
+.nav-label, .eyebrow {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.nav {
+  border: 0;
+  background: transparent;
+  padding: 13px;
+  text-align: left;
+  border-radius: 9px;
+  color: #73768a;
+  font-size: 13px;
+}
+
+.nav.active, .nav:hover {
+  background: #f0eeff;
+  color: var(--primary);
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  background: #f7f6ff;
+  padding: 18px;
+  border-radius: 12px;
+  line-height: 1.8;
+  font-size: 13px;
+}
+
+.sidebar-bottom small { color: var(--muted); }
+
+.main {
+  flex: 1;
+  max-width: 1600px;
+  margin: auto;
+  padding: 35px;
+  min-width: 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 27px;
+}
+
+.topbar h1 {
+  font-size: 26px;
+  margin: 7px 0;
+}
+
+#today, .section-heading p, .chart-panel > p {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  background: #eeeaff;
+  color: var(--primary);
+  border-radius: 50%;
+  font-weight: 700;
+}
+
+.welcome {
+  background: #eeeaff;
+  padding: 27px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.welcome h2 {
+  font-size: 23px;
+  margin: 10px 0;
+}
+
+.welcome p:last-child {
+  font-size: 12px;
+  color: #77748e;
+}
+
+.welcome-icon {
+  font-size: 48px;
+  color: var(--primary);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.stat-card, .panel {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 21px;
+}
+
+.stat-card p, .stat-card small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stat-card h2 {
+  font-size: 29px;
+  margin: 12px 0 5px;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(260px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.section-heading h2, .chart-panel h2 {
+  font-size: 17px;
+  margin-bottom: 6px;
+}
+
+.task-count {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.task-form {
+  display: grid;
+  grid-template-columns: minmax(100px, 1fr) 100px 95px auto;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.task-form input, .task-form select {
+  min-width: 0;
+  padding: 11px 9px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  outline: none;
+  font-size: 11px;
+  background: white;
+}
+
+.task-form input:focus {
+  border-color: var(--primary);
+}
+
+.task-form button {
+  background: var(--primary);
+  color: white;
+  border: 0;
+  padding: 10px 13px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.filters {
+  display: flex;
+  gap: 15px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.filter {
+  background: none;
+  border: none;
+  padding: 10px 2px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.filter.active {
+  color: var(--primary);
+  border-bottom: 2px solid var(--primary);
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 14px 2px;
+  border-bottom: 1px solid #f0f0f4;
+}
+
+.task-item:last-child { border-bottom: 0; }
+
+.task-check {
+  accent-color: var(--primary);
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.task-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-title {
+  font-size: 12px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.task-meta {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+
+.task-item.done .task-title {
+  text-decoration: line-through;
+  color: #a5a5b1;
+}
+
+.priority {
+  font-size: 10px;
+  padding: 5px 8px;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+
+.priority.high { background: #ffecec; color: #db6464; }
+.priority.medium { background: #fff4df; color: #c28a28; }
+.priority.low { background: #e9f8ef; color: #399b67; }
+
+.delete-btn {
+  background: none;
+  border: 0;
+  color: #b5b5c0;
+  font-size: 18px;
+  padding: 5px;
+}
+
+.delete-btn:hover { color: #df5555; }
+
+.empty {
+  text-align: center;
+  padding: 35px 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.chart-wrap {
+  max-width: 230px;
+  margin: 22px auto;
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.legend span:first-child { color: var(--primary); }
+.legend span:last-child { color: #e8e7ef; }
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  margin-top: 28px;
+}
+
+.progress-track {
+  height: 7px;
+  background: #eeeef3;
+  border-radius: 10px;
+  margin-top: 11px;
+  overflow: hidden;
+}
+
+#progressBar {
+  width: 0%;
+  height: 100%;
+  background: var(--primary);
+  border-radius: inherit;
+  transition: width .3s;
+}
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  padding: 30px 0 5px;
+}
+
+@media (max-width: 1000px) {
+  .content-grid { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 650px) {
+  .sidebar {
+    width: 100%;
+    padding: 12px;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .logo {
+    width: 100%;
+    margin: 0 0 8px;
+    font-size: 21px;
+  }
+
+  .nav-label, .sidebar-bottom { display: none; }
+
+  .nav { padding: 9px; font-size: 11px; }
+
+  .app { flex-direction: column; }
+
+  .main { padding: 20px 14px; }
+
+  .stats { gap: 10px; }
+
+  .stat-card { padding: 15px; }
+
+  .stat-card h2 { font-size: 23px; }
+
+  .task-form {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .task-form input { grid-column: 1 / -1; }
+
+  .welcome h2 { font-size: 19px; }
+}
+
+  </style>
+</style></head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <h2 class="logo">Dev<span>Track.</span></h2>
+      <p class="nav-label">WORKSPACE</p>
+      <button class="nav active" data-filter="all">◫ Dashboard</button>
+      <button class="nav" data-filter="active">◷ My Tasks</button>
+      <button class="nav" data-filter="completed">✓ Completed</button>
+      <div class="sidebar-bottom">
+        <p>Stay focused.</p>
+        <small>One task at a time.</small>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">YOUR WORKSPACE</p>
+          <h1>Dashboard</h1>
+          <p id="today"></p>
+        </div>
+        <div class="avatar">D</div>
+      </header>
+
+      <section class="welcome">
+        <div>
+          <p class="eyebrow">DAILY OVERVIEW</p>
+          <h2>Make today count.</h2>
+          <p>Small steps lead to big achievements.</p>
+        </div>
+        <div class="welcome-icon">✦</div>
+      </section>
+
+      <section class="stats">
+        <article class="stat-card">
+          <p>Total Tasks</p>
+          <h2 id="total">0</h2>
+          <small>All your tasks</small>
+        </article>
+        <article class="stat-card">
+          <p>Completed</p>
+          <h2 id="completed">0</h2>
+          <small>Tasks finished</small>
+        </article>
+        <article class="stat-card">
+          <p>Pending</p>
+          <h2 id="pending">0</h2>
+          <small>Tasks remaining</small>
+        </article>
+        <article class="stat-card">
+          <p>Productivity</p>
+          <h2 id="percentage">0%</h2>
+          <small>Completion rate</small>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <div class="panel task-panel">
+          <div class="section-heading">
+            <div>
+              <h2>My Tasks</h2>
+              <p>Manage your daily activities</p>
+            </div>
+            <span class="task-count" id="taskCount">0 tasks</span>
+          </div>
+
+          <form id="taskForm" class="task-form">
+            <input id="taskInput" type="text"
+              placeholder="What needs to be done?" maxlength="100"
+              required>
+            <select id="category">
+              <option>Work</option>
+              <option>Study</option>
+              <option>Personal</option>
+            </select>
+            <select id="priority">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+            <button type="submit">+ Add Task</button>
+          </form>
+
+          <div class="filters">
+            <button class="filter active" data-filter="all">All</button>
+            <button class="filter" data-filter="active">Active</button>
+            <button class="filter" data-filter="completed">Completed</button>
+          </div>
+
+          <div id="taskList" class="task-list"></div>
+        </div>
+
+        <div class="panel chart-panel">
+          <h2>Progress Overview</h2>
+          <p>Your task completion</p>
+          <div class="chart-wrap">
+            <canvas id="progressChart"></canvas>
+          </div>
+          <div class="legend">
+            <span>● Completed</span>
+            <span>● Remaining</span>
+          </div>
+          <div class="progress-info">
+            <span>Overall progress</span>
+            <strong id="progressLabel">0%</strong>
+          </div>
+          <div class="progress-track">
+            <div id="progressBar"></div>
+          </div>
+        </div>
+      </section>
+
+      <footer>Made with focus. Built with DevTrack. © 2026</footer>
+    </main>
+  </div>
+
+  <script>
+
+const STORAGE_KEY = "devtrack_tasks_v1";
+
+let tasks = loadTasks();
+let currentFilter = "all";
+let progressChart;
+
+const $ = (id) => document.getElementById(id);
+
+function loadTasks() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    return Array.isArray(saved) ? saved.filter(task =>
+      task && typeof task.id === "string" &&
+      typeof task.title === "string" &&
+      typeof task.completed === "boolean" &&
+      ["Work", "Study", "Personal"].includes(task.category) &&
+      ["low", "medium", "high"].includes(task.priority)
+    ) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveTasks() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function addTask(title, category, priority) {
+  const task = {
+    id: crypto.randomUUID(),
+    title,
+    category,
+    priority,
+    completed: false,
+    createdAt: new Date().toISOString()
+  };
+
+  tasks.unshift(task);
+  saveTasks();
+  render();
+}
+
+function toggleTask(id) {
+  tasks = tasks.map(task =>
+    task.id === id
+      ? { ...task, completed: !task.completed }
+      : task
+  );
+  saveTasks();
+  render();
+}
+
+function deleteTask(id) {
+  tasks = tasks.filter(task => task.id !== id);
+  saveTasks();
+  render();
+}
+
+function getVisibleTasks() {
+  if (currentFilter === "active") {
+    return tasks.filter(task => !task.completed);
+  }
+
+  if (currentFilter === "completed") {
+    return tasks.filter(task => task.completed);
+  }
+
+  return tasks;
+}
+
+function updateDashboard() {
+  const total = tasks.length;
+  const completed = tasks.filter(task => task.completed).length;
+  const pending = total - completed;
+  const percentage = total
+    ? Math.round((completed / total) * 100)
+    : 0;
+
+  $("total").textContent = total;
+  $("completed").textContent = completed;
+  $("pending").textContent = pending;
+  $("percentage").textContent = percentage + "%";
+  $("taskCount").textContent =
+    `${getVisibleTasks().length} tasks`;
+
+  $("progressLabel").textContent = percentage + "%";
+  $("progressBar").style.width = percentage + "%";
+
+  updateChart(completed, pending);
+}
+
+function updateChart(completed, pending) {
+  if (!progressChart) {
+    progressChart = new Chart($("progressChart"), {
+      type: "doughnut",
+      data: {
+        labels: ["Completed", "Remaining"],
+        datasets: [{
+          data: [completed, pending],
+          backgroundColor: ["#6857e8", "#e8e7ef"],
+          borderWidth: 0,
+          hoverOffset: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        cutout: "76%",
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  } else {
+    progressChart.data.datasets[0].data = [
+      completed, pending
+    ];
+    progressChart.update();
+  }
+}
+
+function renderTasks() {
+  const list = $("taskList");
+  const visibleTasks = getVisibleTasks();
+
+  if (!visibleTasks.length) {
+    list.innerHTML = `
+      <div class="empty">
+        <p>✦</p>
+        <p>No tasks here. Add one to get started!</p>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = visibleTasks.map(task => `
+    <div class="task-item ${task.completed ? "done" : ""}">
+      <input
+        class="task-check"
+        type="checkbox"
+        aria-label="Complete ${escapeHTML(task.title)}"
+        data-action="toggle"
+        data-id="${escapeHTML(task.id)}"
+        ${task.completed ? "checked" : ""}
+      >
+
+      <div class="task-details">
+        <div class="task-title">${escapeHTML(task.title)}</div>
+        <div class="task-meta">
+          ${escapeHTML(task.category)} ·
+          ${new Date(task.createdAt).toLocaleDateString()}
+        </div>
+      </div>
+
+      <span class="priority ${task.priority}">
+        ${task.priority}
+      </span>
+
+      <button
+        class="delete-btn"
+        data-action="delete"
+        data-id="${escapeHTML(task.id)}"
+        aria-label="Delete ${escapeHTML(task.title)}"
+      >×</button>
+    </div>
+  `).join("");
+}
+
+function render() {
+  renderTasks();
+  updateDashboard();
+
+  document.querySelectorAll("[data-filter]").forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.dataset.filter === currentFilter
+    );
+  });
+}
+
+// Add task
+$("taskForm").addEventListener("submit", event => {
+  event.preventDefault();
+
+  const title = $("taskInput").value.trim();
+
+  if (!title) return;
+
+  addTask(
+    title,
+    $("category").value,
+    $("priority").value
+  );
+
+  $("taskForm").reset();
+  $("taskInput").focus();
+});
+
+// Task interactions using event delegation
+$("taskList").addEventListener("click", event => {
+  const button = event.target.closest("[data-action]");
+  if (!button) return;
+
+  const { action, id } = button.dataset;
+
+  if (action === "delete") deleteTask(id);
+});
+
+$("taskList").addEventListener("change", event => {
+  const checkbox = event.target.closest('[data-action="toggle"]');
+  if (!checkbox) return;
+
+  toggleTask(checkbox.dataset.id);
+});
+
+// Sidebar and task filters
+document.querySelectorAll("[data-filter]").forEach(button => {
+  button.addEventListener("click", () => {
+    currentFilter = button.dataset.filter;
+    render();
+  });
+});
+
+// Today's date
+$("today").textContent = new Intl.DateTimeFormat(
+  "en-IN",
+  {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  }
+).format(new Date());
+
+// Initial dashboard
+render();
+
+  </script>
+</body>
+</html>
