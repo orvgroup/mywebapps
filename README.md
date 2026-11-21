@@ -38,6 +38,7 @@ New projects are listed here automatically when a folder containing an `index.ht
 - [automation-store](https://orvgroup.github.io/mywebapps/automation-store/)
 - [devtrack](https://orvgroup.github.io/mywebapps/devtrack/)
 - [profileforge](https://orvgroup.github.io/mywebapps/profileforge/)
+- [vishnu-god](https://orvgroup.github.io/mywebapps/vishnu-god/)
 <!-- PROJECT-LINKS-END -->
 
 ---
